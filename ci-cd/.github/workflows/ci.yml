@@ -1,0 +1,18 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  sanity-check:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show working directory
+        run: pwd
+
+      - name: List repository structure
+        run: ls -la
