@@ -5,14 +5,18 @@ on:
     branches: [ "main" ]
 
 jobs:
-  sanity-check:
+  build:
     runs-on: self-hosted
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show working directory
-        run: pwd
+      - name: Set short SHA
+        id: vars
+        run: echo "SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: List repository structure
-        run: ls -la
+      - name: Build Docker image with SHA tag
+        run: |
+          docker build -t mini-platform:${{ steps.vars.outputs.SHA }} .
+          docker tag mini-platform:${{ steps.vars.outputs.SHA }} mini-platform:latest
