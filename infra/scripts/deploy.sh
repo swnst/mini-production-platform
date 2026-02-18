@@ -24,3 +24,15 @@ docker run -d --name mini-platform -p 3000:3000 ${IMAGE_NAME}:${TAG}
 EOF
 
 echo "Deployment complete."
+
+echo "Waiting for service to become healthy..."
+sleep 3
+
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://${APP_NODE}:3000)
+
+if [ "$HTTP_CODE" != "200" ]; then
+  echo "Health check failed! HTTP code: $HTTP_CODE"
+  exit 1
+fi
+
+echo "Service is healthy."
