@@ -1,22 +1,28 @@
-name: CI
+name: CI-CD
 
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set short SHA
         id: vars
         run: echo "SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      - name: Build Docker image with SHA tag
+      - name: Build image
         run: |
           docker build -t mini-platform:${{ steps.vars.outputs.SHA }} .
           docker tag mini-platform:${{ steps.vars.outputs.SHA }} mini-platform:latest
+
+      - name: Deploy to app-node
+        run: |
+          chmod +x infra/scripts/deploy.sh
+          ./infra/scripts/deploy.sh ${{ steps.vars.outputs.SHA }}
+
