@@ -9,6 +9,7 @@ client.collectDefaultMetrics();
 
 app.get('/', (req, res) => {
   res.json({ status: "ok", service: "mini-platform-app" });
+  httpRequestCounter.inc({ method: 'GET', route: '/', status: 200 });
 });
 
 app.get('/metrics', async (req, res) => {
@@ -18,4 +19,10 @@ app.get('/metrics', async (req, res) => {
 
 app.listen(port, () => {
   console.log(`App running on port ${port}`);
+});
+
+const httpRequestCounter = new client.Counter({
+  name: 'http_requests_total',
+  help: 'Total number of HTTP requests',
+  labelNames: ['method', 'route', 'status']
 });
